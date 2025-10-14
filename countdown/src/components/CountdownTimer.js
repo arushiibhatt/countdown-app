@@ -1,8 +1,34 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Draggable from "react-draggable";
 
-function CountdownTimer({ isSettingsOpen, targetDate, fontSize }) {
-    const nodeRef = useRef(null);
+function Background({ background, children }) {
+    return(
+        <div className="min-h-screen relative flex flex-col items-center justify-center"
+        style={background.type === 'color' ? { 
+            backgroundColor: background.value 
+        } : {}}>
+            {background.type === 'image' && (
+            <img 
+                src={background.value} 
+                alt="Background"
+                className="fixed inset-0 w-full h-full object-cover -z-10"/>
+            )}
+                    
+            {background.type === 'video' && (
+            <video 
+                src={background.value} 
+                autoPlay 
+                loop 
+                muted
+                className="fixed inset-0 w-full h-full object-cover -z-10"
+            />
+            )}
+            {children}
+        </div>
+    );
+}    
+
+function CountdownTimer({ isSettingsOpen, targetDate, fontSize, fontColor, background }) {
     const [days, setDays] = useState(0);
     const [hours, setHours] = useState(0);
     const [minutes, setMinutes] = useState(0);
@@ -33,36 +59,42 @@ function CountdownTimer({ isSettingsOpen, targetDate, fontSize }) {
     }, [target]);
 
     return (
-        <div 
-            className="text-black mx-auto transition-transform duration-1000 flex flex-col justify-center items-center"
+        <Background background={background}>
+            <div className="text-black mx-auto transition-transform duration-500 flex flex-col justify-center items-center"
             style={{ transform: isSettingsOpen ? 'translateY(-40%)' : 'translateY(0)' }}
-        >
-            <div className="text-center mb-12">
-                <h1 className="text-3xl">Countdown Title</h1>
+            >
+                <div className="text-center mb-12">
+                    <h1 className="text-3xl">Countdown Title</h1>
+                </div>
+                <div className="flex flex-col sm:flex-row justify-center gap-4"
+                    style={{ color: fontColor }}>
+                    <div className="text-center p-6 min-w-20">
+                        <p className="font-bold"
+                        style={{ fontSize: `${fontSize * 2}px`}}>{days}</p>
+                        <p className="text-lg text-black-600"
+                        style={{ fontSize: `${fontSize/2}px`}}>Days</p>
+                    </div>
+                    <div className="text-center p-6 min-w-20">
+                        <p className="font-bold"
+                        style={{ fontSize: `${fontSize * 2}px` }}>{hours}</p>
+                        <p className="text-lg text-black-600"
+                        style={{ fontSize: `${fontSize/2}px`}}>Hours</p>
+                    </div>
+                    <div className="text-center p-6 min-w-20">
+                        <p className="font-bold"
+                        style={{ fontSize: `${fontSize * 2}px` }}>{minutes}</p>
+                        <p className="text-lg text-black-600"
+                        style={{ fontSize: `${fontSize/2}px`}}>Minutes</p>
+                    </div>
+                    <div className="text-center p-6 min-w-20">
+                        <p className="font-bold"
+                        style={{ fontSize: `${fontSize * 2}px` }}>{seconds}</p>
+                        <p className="text-lg text-black-600"
+                        style={{ fontSize: `${fontSize/2}px`}}>Seconds</p>
+                    </div>
+                </div>
             </div>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <div className="text-center p-6 min-w-20">
-                    <p className="font-bold"
-                    style={{ fontSize: `${fontSize * 2}px` }}>{days}</p>
-                    <p className="text-lg text-gray-600">Days</p>
-                </div>
-                <div className="text-center p-6 min-w-20">
-                    <p className="font-bold"
-                    style={{ fontSize: `${fontSize * 2}px` }}>{hours}</p>
-                    <p className="text-lg text-gray-600">Hours</p>
-                </div>
-                <div className="text-center p-6 min-w-20">
-                    <p className="font-bold"
-                    style={{ fontSize: `${fontSize * 2}px` }}>{minutes}</p>
-                    <p className="text-lg text-gray-600">Minutes</p>
-                </div>
-                <div className="text-center p-6 min-w-20">
-                    <p className="font-bold"
-                    style={{ fontSize: `${fontSize * 2}px` }}>{seconds}</p>
-                    <p className="text-lg text-gray-600">Seconds</p>
-                </div>
-            </div>
-        </div>
+        </Background>
     )
 }
 
