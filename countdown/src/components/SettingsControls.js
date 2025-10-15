@@ -1,32 +1,17 @@
-
-import { useState, useEffect } from 'react';
-import './Settings.css';
-
-function SettingsButton({ isSettingsOpen, setIsSettingsOpen }) {
-    return (
-        <button 
-            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            className="fixed left-8 bottom-8 z-30 flex gap-2 items-center bg-black px-6 py-2 rounded-2xl hover:shadow-xl transition-shadow"
-        >
-            <p className="text-white">Settings</p>
-        </button>
-    );
-}
-
+// Date and Time setter component
 function DateTimePicker({ date, time, setDate, setTime }) {
-    // Helper to get today's date in yyyy-mm-dd
+    //get today's date in yyyy-mm-dd
     const getToday = () => {
         const d = new Date();
         return d.toISOString().slice(0, 10);
     };
-    // Helper to get default time
+
     const getDefaultTime = () => '00:00';
 
-    // Display selected date and time
     const displayDate = date || getToday();
     const displayTime = time || getDefaultTime();
 
-    // Handle changes with defaults
+    //handle changes for date and time
     const handleDateChange = (e) => {
         setDate(e.target.value);
         if (!time) setTime(getDefaultTime());
@@ -60,9 +45,10 @@ function DateTimePicker({ date, time, setDate, setTime }) {
     );
 }
 
+// Font customization components
 function FontSizePicker({ fontSize, setFontSize }) {
     return (
-        <div className="flex flex-col px-4 mt-0w-32">
+        <div className="flex flex-col px-4 mt-0 w-32">
             <p className="font-bold mb-2">Font Size</p>
             <div className="flex gap-3 items-center mb-2">
                 <input 
@@ -90,7 +76,7 @@ function FontSizePicker({ fontSize, setFontSize }) {
     );
 }
 
-function FontColorPicker({ fontColor, setFontColor}) {
+function FontColorPicker({ fontColor, setFontColor }) {
     return (
         <div className="flex flex-col px-4 mt-0 w-32">
             <p className="font-bold mb-2">Font Color</p>
@@ -106,6 +92,86 @@ function FontColorPicker({ fontColor, setFontColor}) {
     );
 }
 
+function FontPicker({ font, setFont, fonts }) {
+    const defaultFonts = [
+    "Arial",
+    "Georgia",
+    "Times New Roman",
+    "Courier New",
+    "Verdana",
+    "Trebuchet MS",
+    "Comic Sans MS",
+    "Lucida Console",
+  ];
+
+  const fontList = fonts || defaultFonts;
+
+  return (
+    <div className="flex flex-col px-4 mt-0 w-36">
+      <label className="font-bold mb-2">Font</label>
+      <select
+        value={font}
+        onChange={(e) => setFont(e.target.value)}
+        style={{ fontFamily: font }}
+        className="px-3 py-2 rounded bg-black text-white border border-gray-600 focus:outline-none focus:border-gray-400 cursor-pointer"
+      >
+        {fontList.map((font) => (
+          <option key={font} value={font} style={{ fontFamily: font }}>
+            {font}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+//Upload custom fonts
+function FontUploader({ fonts, setFonts }) {
+  const handleFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const ext = file.name.split(".").pop().toLowerCase();
+    if (ext !== "ttf" && ext !== "otf") {
+      alert("Only .ttf or .otf fonts are supported");
+      return;
+    }
+
+    const fontName = file.name.replace(/\.[^/.]+$/, "");
+    const fontUrl = URL.createObjectURL(file);
+
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @font-face {
+        font-family: '${fontName}';
+        src: url('${fontUrl}') format('${ext === "ttf" ? "truetype" : "opentype"}');
+      }
+    `;
+    document.head.appendChild(style);
+
+    //add new font to fonts list user can choose from
+    if (!fonts.includes(fontName)) {
+      setFonts([...fonts, fontName]);
+    }
+  };
+
+  return (
+    <div className="flex flex-col px-4 mt-0 w-64">
+      <p className="font-bold mb-2">Upload Font</p>
+      <label className="px-4 py-2 bg-black border border-gray-600 rounded text-white cursor-pointer hover:bg-gray-700 text-sm w-36 text-center">
+        Upload
+        <input
+          type="file"
+          accept=".ttf,.otf"
+          onChange={handleFile}
+          className="hidden"
+        />
+      </label>
+    </div>
+  );
+}
+
+// Background upload and color picker component
 function BackgroundPicker({ background, setBackground }) {
     const handleFile = (e) => {
         const file = e.target.files[0];
@@ -167,70 +233,4 @@ function BackgroundPicker({ background, setBackground }) {
     );
 }
 
-function Settings({ isSettingsOpen, setIsSettingsOpen, targetDate, setTargetDate, fontSize, setFontSize, fontColor, setFontColor, background, setBackground }) {
-    const [date, setDate] = useState('');
-    const [time, setTime] = useState('');
-
-    // Helper to get today's date in yyyy-mm-dd
-    const getToday = () => {
-        const d = new Date();
-        return d.toISOString().slice(0, 10);
-    };
-    // Helper to get current time in hh:mm
-    const getNow = () => {
-        const d = new Date();
-        return d.toTimeString().slice(0, 5);
-    };
-    // Helper to get default time
-    const getDefaultTime = () => '00:00';
-
-    useEffect(() => {
-        // Case 1: nothing picked
-        if (!date && !time) {
-            setTargetDate(`${getToday()}T${getNow()}`);
-        }
-        // Case 2: date picked, no time
-        else if (date && !time) {
-            setTargetDate(`${date}T${getDefaultTime()}`);
-        }
-        // Case 3: time picked, no date
-        else if (!date && time) {
-            setTargetDate(`${getToday()}T${time}`);
-        }
-        // Case 4: both picked
-        else if (date && time) {
-            setTargetDate(`${date}T${time}`);
-        }
-    }, [date, time, setTargetDate]);
-
-    return (
-        <>
-            <SettingsButton isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen} />
-            <div 
-                className="fixed bottom-0 left-0 right-0 bg-black transition-transform duration-500 z-40"
-                style={{ 
-                    transform: isSettingsOpen ? 'translateY(0)' : 'translateY(100%)',
-                    height: '40%'
-                }}
-            >
-
-                <button
-                    onClick={() => setIsSettingsOpen(false)}
-                    className="absolute top-4 left-4 text-white text-3xl hover:text-gray-300 transition-colors"
-                    title="Close Settings"
-                >⌵</button>
-            
-                <div className="p-8 text-white">
-                    <div className="flex flex-row gap-4 mt-8">
-                        <DateTimePicker date={date} time={time} setDate={setDate} setTime={setTime} />
-                        <FontSizePicker fontSize={fontSize} setFontSize={setFontSize} />
-                        <FontColorPicker fontColor={fontColor} setFontColor={setFontColor} />
-                        <BackgroundPicker background={background} setBackground={setBackground} />
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-}
-
-export default Settings;
+export { DateTimePicker, FontSizePicker, FontColorPicker, FontPicker, FontUploader, BackgroundPicker };
