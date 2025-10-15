@@ -9,7 +9,7 @@ Built with a focus on interactivity, modular design, and a clear feature priorit
    - Tier 1: Core Features
    - Tier 2: Extended Features
    - Tier 3: Enhancements
-4. Project Structure
+4. Assumptions
 5. Setup Instructions
 6. Bonus Questions/Future Improvements
 
@@ -72,6 +72,16 @@ I was not able to implement this feature due to limited time. However, in a futu
 **Animation Options**  
 Users can apply fade-in, bouncing, or pulsating effects to the text.  
 I was not able to implement this feature due to limited time. However, animations like fade-in, bounce, or pulse can be implemented with CSS @keyframes and added to certain components conditionally via class names based on the user's choices. This would allow users to toggle effects per unit without affecting performance.
+
+## Assumptions
+
+**Multiple Date/Time Inputs:**
+- I assumed that allowing users to input multiple date-time values means they should be able to create and display multiple countdowns simultaneously on the screen. Each countdown can be edited independently if it is selected (clicked on)
+
+*Alternative interpretation: Users could navigate between different countdowns, each with its own background, using arrow navigation buttons.*
+
+**Font Upload and Selection:**
+- I assumed that users should have the option to either choose from a predefined list of available fonts or upload their own custom font, which would then be added to the selection list.
  
 ## Setup Instructions
 Follow these steps to run the project locally or build it for production.  
@@ -119,3 +129,4 @@ For more complex user interactions (like multiple countdowns, global preferences
 **Export Options → How would users be able to easily zip up an export package that can be run with the index.html on any browser and screen?** 
 
 Exporting is important for an application like a countdown that can be displayed on multiple screens. To make this easy for the users, I'd add an "Export" option or button in my application that automatically downloads a .zip file that bundle's the user's preferences onto their device. The ZIP would have a version of the countdown that can run locally in any browser without needing a server and the user would open the index.html file to see their customized countdown on any screen.
+
